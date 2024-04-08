@@ -2,13 +2,24 @@ import { useState } from 'react'
 
 const Button = (props) => <button onClick={props.handler}>{props.text} </button>
 
+const Header = (props) => <h1>{props.text}</h1>
+
 const Anecdote = (props) => {
-  return (
-    <div>
-      <p>{props.anecdote}</p>
-      <p>Has {props.points} votes.</p>
-    </div>
-  )
+  if (props.points != undefined) {
+    return (
+      <div>
+        <p>{props.anecdote}</p>
+        <p>Has {props.points} votes.</p>
+      </div>
+    )
+  }
+  else {
+    return (
+      <div>
+        <p>{props.anecdote}</p>
+      </div>
+    )
+  }
 }
 
 const App = () => {
@@ -27,6 +38,8 @@ const App = () => {
 
   const [points, setPoints] = useState([0, 0, 0, 0, 0, 0, 0, 0])
 
+  const mostVotedIndex = points.indexOf(Math.max(...points))
+
   const handleRandom = () => {
     const updateSelected = Math.floor(Math.random() * anecdotes.length)
     setSelected(updateSelected)
@@ -40,10 +53,17 @@ const App = () => {
 
   return (
     <div>
-      <Anecdote anecdote={anecdotes[selected]} points={points[selected]}/>
+      <Header text="Anecdote of the day" />
+      <div>
+        <Anecdote anecdote={anecdotes[selected]} points={points[selected]}/>
+      </div>
       <div>
         <Button handler={handlePoints} text="Vote Anecdote" />
         <Button handler={handleRandom} text="Select Random" />
+      </div>
+      <Header text="Most voted anecdote" />
+      <div>
+        <Anecdote anecdote={anecdotes[mostVotedIndex]}/>
       </div>
     </div>
   )
