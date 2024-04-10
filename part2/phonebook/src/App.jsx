@@ -1,5 +1,29 @@
 import { useState } from 'react'
 
+const Filter = ({ filter, handler}) =>
+  <div>
+    Filter shown with <input value={filter} onChange={handler} />
+  </div>
+
+const PersonForm = ({ handleSubmit, name, handleName, number, handleNumber }) =>
+  <form onSubmit={handleSubmit}>
+    <div>
+      name: <input value={name} onChange={handleName}/>
+    </div>
+    <div>
+      number: <input value={number} onChange={handleNumber}/>
+    </div>
+    <div>
+      <button type="submit">add</button>
+    </div>
+  </form>
+
+const Persons = ({ personsList }) => 
+  <div>
+    {personsList.map(person => <p key={person.id}>{person.name} {person.number} </p>)}
+  </div>
+
+
 const App = () => {
   const [persons, setPersons] = useState([
     { name: 'Arto Hellas', number: '040-123456', id: 1 },
@@ -27,7 +51,7 @@ const App = () => {
     }
   }
 
-  const addName = (event) => {
+  const addPerson = (event) => {
     event.preventDefault()
     if (persons.map(person => person.name).includes(newName)) {
       alert(`${newName} is already added to phonebook.`)
@@ -54,25 +78,23 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <div>
-        Filter shown with <input value={filter} onChange={filterChange} />
-      </div>
-      <h2>Add new</h2>
-      <form onSubmit={addName}>
-        <div>
-          name: <input value={newName} onChange={nameChange}/>
-        </div>
-        <div>
-          number: <input value={newNumber} onChange={numberChange}/>
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
-      <h2>Numbers</h2>
-      <div>
-        {namesToShow.map(person => <p key={person.id}>{person.name} {person.number} </p>)}
-      </div>
+
+      <Filter filter={filter} handler={filterChange} />
+
+      <h3>Add a new</h3>
+
+      <PersonForm 
+        handleSubmit={addPerson}
+        name={newName}
+        handleName={nameChange}
+        number={newNumber}
+        handleNumber={numberChange}
+      />
+
+      <h3>Numbers</h3>
+
+      <Persons personsList={namesToShow} />
+
     </div>
   )
 }
