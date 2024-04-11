@@ -60,10 +60,27 @@ const App = () => {
     }
   }
 
+  const editNumber = (id) => {
+    const person = persons.find(person => person.id === id)
+    if (confirm(`${person.name} is already added to phonebook, replace the old number with a new one?`)) {
+      const updatePerson = {
+        ...person,
+        number: newNumber
+      }
+
+      personService
+        .update(person.id, updatePerson)
+        .then(newPerson => {
+          setPersons(persons.map(person => person.id !== id ? person : newPerson))
+        })
+    }
+  } 
+
   const addPerson = (event) => {
     event.preventDefault()
     if (persons.map(person => person.name).includes(newName)) {
-      alert(`${newName} is already added to phonebook.`)
+      const id = persons.find(person => person.name === newName).id
+      editNumber(id)
     }
     else if (newName === '' || newNumber === '') {
       alert('Please fill al the fields.')
