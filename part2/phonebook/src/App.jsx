@@ -1,34 +1,10 @@
 import { useState, useEffect } from 'react'
 import personService from './services/Persons'
 
-const Filter = ({ filter, handler}) =>
-  <div>
-    Filter shown with <input value={filter} onChange={handler} />
-  </div>
-
-const PersonForm = ({ handleSubmit, name, handleName, number, handleNumber }) =>
-  <form onSubmit={handleSubmit}>
-    <div>
-      name: <input value={name} onChange={handleName}/>
-    </div>
-    <div>
-      number: <input value={number} onChange={handleNumber}/>
-    </div>
-    <div>
-      <button type="submit">add</button>
-    </div>
-  </form>
-
-const Persons = ({ personsList, handler }) => 
-  <div>
-    {personsList.map((person, i) =>
-      <p key={person.id}>
-        {person.name} {person.number}
-        <button key={person.id} onClick={() => handler(person.id)}>Delete</button>
-      </p>
-    )}
-  </div>
-
+import PersonForm from './components/PersonForm'
+import Filter from './components/Filter'
+import Persons from './components/Persons'
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -36,6 +12,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
   const [showAll, setShowAll] = useState(true)
+  const [notificationMessage, setNotificationMessage] = useState(null)
 
   useEffect(() =>{
     personService
@@ -70,8 +47,13 @@ const App = () => {
 
       personService
         .update(person.id, updatePerson)
-        .then(newPerson => {
-          setPersons(persons.map(person => person.id !== id ? person : newPerson))
+        .then(returnedPerson => {
+          setNotificationMessage(`Number of ${returnedPerson.name} changed succesfuly.`)
+          console.log(notificationMessage);
+          setTimeout(() => {
+            setNotificationMessage(null)
+          }, 3000);
+          setPersons(persons.map(person => person.id !== id ? person : returnedPerson))
         })
     }
   } 
@@ -93,6 +75,10 @@ const App = () => {
       personService
         .create(personObject)
         .then(returnedPerson => {
+          setNotificationMessage(`Added ${returnedPerson.name} succesfuly.`)
+          setTimeout(() => {
+            setNotificationMessage(null)
+          }, 3000);
           setPersons(persons.concat(returnedPerson))
         })
     }
@@ -116,6 +102,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+
+      <Notification message={notificationMessage} />
 
       <Filter filter={filter} handler={filterChange} />
 
