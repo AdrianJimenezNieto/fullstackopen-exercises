@@ -6,6 +6,8 @@ import Filter from "./components/Filter"
 import Countries from "./components/Countries"
 import Country from "./components/Country"
 
+const weather_api = import.meta.env.MODE
+
 const App = () => {
 
   const [value, setValue] = useState('')
@@ -13,6 +15,7 @@ const App = () => {
   const [countryToShow, setCountryToShow] = useState(null)
   const [search, setSearch] = useState(null)
 
+  console.log(weather_api);
   
   useEffect(() => {
     if (search) {
@@ -55,6 +58,14 @@ const App = () => {
     }
   }
 
+  const showCountry = (e) => {
+    const newSearch = e.target.id
+    countryService
+      .getCountry(newSearch.toLocaleLowerCase())
+      .then(country => setCountryToShow(country))
+      setCountries(null)
+  }
+
   return (
     <div>
       <Filter value={value} handler={handleFilter} />
@@ -63,7 +74,7 @@ const App = () => {
         !search ?
         null
         :countries ?
-          <Countries countries={countries} />
+          <Countries countries={countries} handler={showCountry} />
           :
           countryToShow ?
             <Country country={countryToShow} />
