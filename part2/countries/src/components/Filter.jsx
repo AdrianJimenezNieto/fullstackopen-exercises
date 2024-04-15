@@ -15,7 +15,7 @@ const Filter = ({ value, handler }) => {
       <p>
         Find countries 
       </p>
-      <input style={inputStyle} value={value} onChange={handler}/>
+      <input autoFocus style={inputStyle} value={value} onChange={handler}/>
     </div>
   )
 }

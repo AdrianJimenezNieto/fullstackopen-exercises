@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react"
 
 import countryService from './services/Countries'
+import weatherService from './services/Weather'
 
 import Filter from "./components/Filter"
 import Countries from "./components/Countries"
 import Country from "./components/Country"
-
-const weather_api = import.meta.env.MODE
 
 const App = () => {
 
@@ -14,8 +13,7 @@ const App = () => {
   const [countries, setCountries] = useState(null)
   const [countryToShow, setCountryToShow] = useState(null)
   const [search, setSearch] = useState(null)
-
-  console.log(weather_api);
+  const [weather, setWeather] = useState(null)
   
   useEffect(() => {
     if (search) {
@@ -36,7 +34,7 @@ const App = () => {
         else if (newCountries.length === 1) {
           countryService
           .getCountry(newCountries[0].toLocaleLowerCase())
-          .then(country => setCountryToShow(country))
+          .then(country => {setCountryToShow(country)})
           setCountries(null)
         }
         else {
@@ -46,6 +44,19 @@ const App = () => {
       })
     }
   }, [search])
+
+  useEffect(() => {
+
+    if(countryToShow) {
+
+      weatherService
+        .getWeather(countryToShow.capitalInfo.latlng)
+        .then(response => {
+          setWeather(response)
+        })
+      
+    }
+  }, [countryToShow])
   
   const handleFilter = (e) => {
     const newSearch = e.target.value
@@ -62,7 +73,9 @@ const App = () => {
     const newSearch = e.target.id
     countryService
       .getCountry(newSearch.toLocaleLowerCase())
-      .then(country => setCountryToShow(country))
+      .then(country => {
+        setCountryToShow(country)
+      })
       setCountries(null)
   }
 
@@ -76,8 +89,8 @@ const App = () => {
         :countries ?
           <Countries countries={countries} handler={showCountry} />
           :
-          countryToShow ?
-            <Country country={countryToShow} />
+          countryToShow && weather ?
+            <Country country={countryToShow} weather={weather} />
             : <p>Too many matches, specify another filter.</p>
       }
     </div>
